@@ -1,0 +1,30 @@
+[mysqld]
+# Server identification
+server-id = 2
+
+# Relay logging
+relay_log = mysql-relay-bin
+relay_log_purge = ON
+
+# GTID replication
+gtid_mode = ON
+enforce_gtid_consistency = ON
+
+# Read-only settings (slave should be read-only)
+# In the frist time initial docker-compose up #comment read_only = ON, #super_read_only = ON let docker create user and database and edit later by uncomment and restart this container again with docker-compose restart mysql-slave1
+read_only = ON
+super_read_only = ON
+
+# Character set
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# InnoDB settings
+innodb_buffer_pool_size = 256M
+innodb_flush_log_at_trx_commit = 1
+
+# Network settings
+bind-address = 0.0.0.0
+
+# Skip replication errors
+slave_skip_errors = 1062

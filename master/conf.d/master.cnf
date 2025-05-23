@@ -1,0 +1,28 @@
+[mysqld]
+# Server identification
+server-id = 1
+
+# Binary logging
+log_bin = mysql-bin
+binlog_format = ROW
+binlog_row_image = FULL
+sync_binlog = 1
+
+# GTID replication
+gtid_mode = ON
+enforce_gtid_consistency = ON
+
+# Replication settings
+binlog_expire_logs_seconds = 604800
+max_binlog_size = 100M
+
+# Character set
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# InnoDB settings
+innodb_buffer_pool_size = 256M
+innodb_flush_log_at_trx_commit = 1
+
+# Network settings
+bind-address = 0.0.0.0

@@ -1,0 +1,72 @@
+#version: '3.8'
+
+# Environment variables can be passed via a .env file
+# MYSQL_ROOT_PASSWORD=your_secure_root_password
+# MYSQL_DATABASE=your_database_name
+# MYSQL_USER=your_regular_user
+# MYSQL_PASSWORD=your_regular_user_password
+# MYSQL_REPLICATION_PASSWORD=your_replication_password
+
+services:
+  # MySQL Master Service
+  mysql_master:
+    image: mysql:8.3.0
+    container_name: mysql_master
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-userpassword}
+      MYSQL_REPLICATION_PASSWORD: ${MYSQL_REPLICATION_PASSWORD:-repl_password}
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./master/data:/var/lib/mysql
+      - ./master/conf.d:/etc/mysql/conf.d
+      - ./master/init:/docker-entrypoint-initdb.d
+      - ./log:/var/log/mysql
+    networks:
+      - mysql_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # MySQL Slave Service
+  mysql_slave:
+    image: mysql:8.3.0
+    container_name: mysql_slave
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mydb}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-userpassword}
+      MYSQL_REPLICATION_PASSWORD: ${MYSQL_REPLICATION_PASSWORD:-repl_password}
+    ports:
+      - "3311:3306"
+    volumes:
+      - ./slave/data:/var/lib/mysql
+       # mark this line in the 1st setup
+       # at /slave/conf.d/slave.cnf In the frist time initial docker-compose up #read_only = ON, #super_read_only = ON let docker create user and database and edit later by uncomment and restart this container again with docker-compose restart mysql-slave
+      - ./slave/conf.d:/etc/mysql/conf.d
+      - ./slave/init:/docker-entrypoint-initdb.d
+      - ./log:/var/log/mysql
+    networks:
+      - mysql_network
+    depends_on:
+      mysql_master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  mysql_network:
+    driver: bridge

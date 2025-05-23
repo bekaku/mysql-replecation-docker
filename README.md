@@ -73,7 +73,7 @@ docker-compose down
 
 6. (Windows only) Right click /slave/conf.d/slave.cnf > properties > uncheck Read only 
 
-7. Edit /slave/conf.d/slave.cnf comment out this two lines 
+7. Edit /slave/conf.d/slave.cnf uncomment this two lines 
 `read_only = ON`
 `super_read_only = ON`
 8. (Windows only) Right click /slave/conf.d/slave.cnf > properties > check Read only 

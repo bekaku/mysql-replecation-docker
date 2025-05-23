@@ -25,7 +25,7 @@ services:
       - ./master/data:/var/lib/mysql
       - ./master/conf.d:/etc/mysql/conf.d
       - ./master/init:/docker-entrypoint-initdb.d
-      - ./log:/var/log/mysql
+      - ./master/log:/var/log/mysql
     networks:
       - mysql_network
     healthcheck:
@@ -54,7 +54,7 @@ services:
        # at /slave/conf.d/slave.cnf In the frist time initial docker-compose up #read_only = ON, #super_read_only = ON let docker create user and database and edit later by uncomment and restart this container again with docker-compose restart mysql-slave
       - ./slave/conf.d:/etc/mysql/conf.d
       - ./slave/init:/docker-entrypoint-initdb.d
-      - ./log:/var/log/mysql
+      - ./slave/log:/var/log/mysql
     networks:
       - mysql_network
     depends_on:

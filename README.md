@@ -49,11 +49,10 @@ chmod +x slave/init/01-configure-slave.sh
 
 
 2. (Windows only) Right click /slave/conf.d/slave.cnf > properties > uncheck Read only 
-
-Edit /slave/conf.d/slave.cnf comment out this two lines 
+3. Edit /slave/conf.d/slave.cnf comment out this two lines 
 `#read_only = ON`
 `#super_read_only = ON`
-(Windows only) Right click /slave/conf.d/slave.cnf > properties > check Read only 
+4. (Windows only) Right click /slave/conf.d/slave.cnf > properties > check Read only 
 
 3. run docker
 ```bash
@@ -73,10 +72,11 @@ docker-compose down
 
 
 6. (Windows only) Right click /slave/conf.d/slave.cnf > properties > uncheck Read only 
-Edit /slave/conf.d/slave.cnf comment out this two lines 
+
+7. Edit /slave/conf.d/slave.cnf comment out this two lines 
 `read_only = ON`
 `super_read_only = ON`
-(Windows only) Right click /slave/conf.d/slave.cnf > properties > check Read only 
+8. (Windows only) Right click /slave/conf.d/slave.cnf > properties > check Read only 
 
 
 8. run docker again

@@ -1,6 +1,6 @@
-# MySQL8 Master-Slave Replication with Docker Compose
+# MySQL9 Master-Slave Replication with Docker Compose
 
-This repository contains all the necessary files to set up a MySQL8 Master-Slave replication environment using Docker Compose.
+This repository contains all the necessary files to set up a MySQL9 Master-Slave replication environment using Docker Compose.
 
 ## Quick Start
 

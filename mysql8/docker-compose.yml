@@ -34,7 +34,6 @@ services:
       - --innodb-log-file-size=256M
       - --innodb-flush-log-at-trx-commit=1
       - --sync-binlog=1
-      # - --default-authentication-plugin=caching_sha2_password
       - --bind-address=0.0.0.0
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -80,7 +79,6 @@ services:
       - --max-connections=500
       - --max-allowed-packet=256M
       - --innodb-buffer-pool-size=1G
-      # - --default-authentication-plugin=caching_sha2_password
       - --bind-address=0.0.0.0
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci

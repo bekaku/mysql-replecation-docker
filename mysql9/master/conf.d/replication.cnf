@@ -1,0 +1,61 @@
+# Save as: master/conf.d/replication.cnf
+# MySQL 9.4 Master Configuration
+
+[mysqld]
+# Server identification
+server-id = 1
+
+# Binary logging
+log_bin = mysql-bin
+binlog_format = ROW
+binlog_row_image = FULL
+max_binlog_size = 100M
+binlog_expire_logs_seconds = 604800
+sync_binlog = 1
+
+# GTID Configuration
+gtid_mode = ON
+enforce_gtid_consistency = ON
+log_slave_updates = ON
+
+# Replication safety
+binlog_checksum = CRC32
+source_verify_checksum = ON
+binlog_rows_query_log_events = ON
+
+# Character set (MySQL 9.4 default)
+character_set_server = utf8mb4
+collation_server = utf8mb4_0900_ai_ci
+
+# InnoDB Configuration
+innodb_buffer_pool_size = 1G
+#innodb_log_file_size = 256M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = ON
+innodb_doublewrite = ON
+
+# Connection settings
+max_connections = 500
+max_connect_errors = 1000
+max_allowed_packet = 256M
+wait_timeout = 28800
+interactive_timeout = 28800
+
+# Query cache (disabled in MySQL 9.4 by default - removed feature)
+# query_cache_type = 0
+# query_cache_size = 0
+
+# Logging
+log_error_verbosity = 2
+slow_query_log = 1
+long_query_time = 2
+log_queries_not_using_indexes = 0
+
+# Performance Schema
+performance_schema = ON
+performance_schema_instrument = 'stage/%=ON'
+performance_schema_instrument = 'statement/%=ON'
+
+# Security
+#default_authentication_plugin = caching_sha2_password

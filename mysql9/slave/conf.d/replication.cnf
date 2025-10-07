@@ -1,0 +1,75 @@
+# Save as: slave/conf.d/replication.cnf
+# MySQL 9.4 Slave/Replica Configuration
+
+[mysqld]
+# Server identification
+server-id = 2
+
+# Binary logging (required for cascading replication)
+log_bin = mysql-bin
+binlog_format = ROW
+binlog_row_image = FULL
+max_binlog_size = 100M
+binlog_expire_logs_seconds = 604800
+
+# GTID Configuration
+gtid_mode = ON
+enforce_gtid_consistency = ON
+log_slave_updates = ON
+
+# Read-only settings
+read_only = ON
+super_read_only = ON
+
+# Relay log configuration
+relay_log = relay-bin
+relay_log_recovery = ON
+relay_log_purge = ON
+max_relay_log_size = 100M
+
+# Skip replica start (manual control)
+skip_replica_start = ON
+
+# Replication settings
+replica_parallel_workers = 4
+replica_parallel_type = LOGICAL_CLOCK
+replica_preserve_commit_order = ON
+replica_transaction_retries = 10
+sync_relay_log = 1
+
+# Replication safety
+binlog_checksum = CRC32
+source_verify_checksum = ON
+replica_sql_verify_checksum = ON
+
+# Character set (MySQL 9.4 default)
+character_set_server = utf8mb4
+collation_server = utf8mb4_0900_ai_ci
+
+# InnoDB Configuration
+innodb_buffer_pool_size = 1G
+#innodb_log_file_size = 256M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = ON
+innodb_doublewrite = ON
+
+# Connection settings
+max_connections = 500
+max_connect_errors = 1000
+max_allowed_packet = 256M
+wait_timeout = 28800
+interactive_timeout = 28800
+
+# Logging
+log_error_verbosity = 2
+slow_query_log = 1
+long_query_time = 2
+
+# Performance Schema
+performance_schema = ON
+performance_schema_instrument = 'stage/%=ON'
+performance_schema_instrument = 'statement/%=ON'
+
+# Security
+#default_authentication_plugin = caching_sha2_password

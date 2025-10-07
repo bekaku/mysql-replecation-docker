@@ -1,0 +1,102 @@
+# version: '3.8'
+
+services:
+  mysql-master:
+    image: mysql:8.3.0
+    container_name: mysql-master
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secure_root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-appdb}
+      MYSQL_USER: ${MYSQL_USER:-appuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password}
+      MYSQL_REPLICATION_USER: replicator
+      MYSQL_REPLICATION_PASSWORD: ${MYSQL_REPLICATION_PASSWORD:-repl_password}
+    volumes:
+      - mysql-master-data:/var/lib/mysql
+      - ./master/conf.d:/etc/mysql/conf.d:ro
+      - ./master/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - mysql-replication
+    command: 
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --log-slave-updates=ON
+      - --binlog-do-db=${MYSQL_DATABASE:-appdb}
+      - --max-connections=500
+      - --max-allowed-packet=256M
+      - --innodb-buffer-pool-size=1G
+      - --innodb-log-file-size=256M
+      - --innodb-flush-log-at-trx-commit=1
+      - --sync-binlog=1
+      # - --default-authentication-plugin=caching_sha2_password
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-secure_root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  mysql-slave:
+    image: mysql:8.3.0
+    container_name: mysql-slave
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-secure_root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-appdb}
+      MYSQL_MASTER_HOST: mysql-master
+      MYSQL_MASTER_PORT: 3306
+      MYSQL_REPLICATION_USER: replicator
+      MYSQL_REPLICATION_PASSWORD: ${MYSQL_REPLICATION_PASSWORD:-repl_password}
+    volumes:
+      - mysql-slave-data:/var/lib/mysql
+      - ./slave/conf.d:/etc/mysql/conf.d:ro
+      - ./slave/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3307:3306"
+    networks:
+      - mysql-replication
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    command:
+      - --server-id=2
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --log-slave-updates=ON
+      - --read-only=ON
+      - --skip-slave-start
+      - --relay-log=relay-bin
+      - --max-connections=500
+      - --max-allowed-packet=256M
+      - --innodb-buffer-pool-size=1G
+      # - --default-authentication-plugin=caching_sha2_password
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-secure_root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  mysql-master-data:
+    driver: local
+  mysql-slave-data:
+    driver: local
+
+networks:
+  mysql-replication:
+    driver: bridge
